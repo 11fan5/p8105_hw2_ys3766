@@ -4,3 +4,25 @@ author: "Yifan Shi"
 date: "2024-10-02"
 output: github_document
 ---
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+### Problem 1
+
+Importing data, cleaning data, selecting variables
+```{r}
+transit = 
+  read_csv(
+    "data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
+    col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11= "c")) %>% 
+  janitor::clean_names() %>% 
+  select(
+    line, station_name, station_latitude, station_longitude, entry, exit_only, vending, entrance_type, ada,
+    starts_with("route")
+  ) %>% 
+  mutate(entry = ifelse(entry == "YES", TRUE, FALSE))
+  
+```
+
