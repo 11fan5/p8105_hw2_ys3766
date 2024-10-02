@@ -1,0 +1,6 @@
+---
+title: "p8105_hw2_ys3766"
+author: "Yifan Shi"
+date: "2024-10-02"
+output: github_document
+---
