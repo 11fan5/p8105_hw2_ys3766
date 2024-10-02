@@ -26,3 +26,58 @@ transit =
   
 ```
 
+The resulting data set contains 1868 observations of 20 variables now. It has variables on NYC subway lines, stations, location of the station, entry and exit information, vending, ADA compliance information and routes.I cleaned the data by converting column types of route8-route11, cleaning the names of the variables, selecting relevant variables, and converting the entry variable to logical. I would say the dataset is not yet tidy, as the route variables is currently wide format. To further tidy the data set, I would convert the route variables from wide to long format, and create a new "route number" variable. 
+
+Number of distinct stations
+```{r}
+transit %>% 
+ distinct(line, station_name) %>% 
+  nrow()
+```
+
+There are 465 distinct stations. 
+
+ADA compliant stations
+```{r}
+transit %>% 
+  filter(ada == TRUE) %>% 
+  distinct(line, station_name) %>% 
+  nrow()
+```
+There are 84 ADA compliant stations. 
+
+Proportion of station entrances/exits without vending allow entrance
+```{r}
+transit %>% 
+  filter(vending == "NO") %>% 
+  pull(entry) %>% 
+  mean()
+```
+37.7% of station entrances/exits without vending allow entrance
+
+Reformat the data so that route number and route name are distinct variables
+```{r}
+transit<-transit %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_number",
+    values_to = "route"
+  )
+```
+
+Distinct stations serve the A train, how many ADA compliant
+```{r}
+transit %>% 
+  filter(route == "A") %>% 
+  distinct(line, station_name) %>% 
+  nrow()
+
+transit %>% 
+  filter(route == "A", ada == TRUE) %>% 
+  distinct(line, station_name) %>% 
+  nrow()
+```
+
+There are 60 distinct stations serving the A train, of which 17 are ADA compliant. 
+
+
