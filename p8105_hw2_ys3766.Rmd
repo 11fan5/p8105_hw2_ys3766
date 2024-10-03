@@ -146,7 +146,7 @@ trash_wheel %>%
   pull(total_weight)
 ```
 
-Total nuber of cigarette butts collected by Gwynnda in june 2022
+Total number of cigarette butts collected by Gwynnda in june 2022
 ```{r}
 trash_wheel %>% 
   filter(source == "Gwynnda Trash Wheel", month == "June", year == 2022) %>% 
@@ -183,6 +183,7 @@ Check for completeness and correctness
 anti_join(bakes, bakers, by = c("series","baker"))
 anti_join(results, bakers, by = c("series","baker"))
 ```
+The mismatched records are displayed in the output table of anti_join. 
 
 merging datasets, arrange the final dataset
 ```{r}
@@ -200,6 +201,9 @@ When merging the three data sets into a single one, I was not sure if i should k
 
 The final dataset contains all bakers that are in the bakers dataset, with their demographics, series and epidose, their bake, show stopper, technical and final results. I arranged the columns by fist the demographics (name, age, occupation, hometown), then the show contexts (series, episode), baking details (signature bakes, show stopper), then performance metrics (technical, result).
 
+
+
+The viewer data set, pivot longer
 ```{r}
 viewers = 
   read_csv('data/viewers.csv') %>% 
@@ -207,7 +211,24 @@ viewers =
   pivot_longer(
     cols = starts_with("series"),
     names_to = "series",
-    values_to = "viewers"
+    values_to = "viewers",
+    names_prefix = "series_"
   )
+
+head(viewers, 10)
 ```
 
+average viewership
+```{r}
+viewers %>% 
+  filter(series == 1) %>% 
+  summarise(average_1 = mean(viewers, na.rm = TRUE))
+
+viewers %>% 
+  filter(series == 5) %>% 
+  summarise(average_5 = mean(viewers, na.rm = TRUE))
+
+
+```
+
+The average viewership in season 1 was 2.77, and the average viewership in season 5 was 10.0.
