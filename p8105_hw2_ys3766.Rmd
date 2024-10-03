@@ -162,11 +162,12 @@ The total number of cigarette butts collected by Gwynnda in June of 2022 was 181
 
 ### Problem 3
 
-Import data
+Import and tidy data
 ```{r}
 bakers = 
   read_csv('data/bakers.csv') %>% 
-  janitor::clean_names()
+  janitor::clean_names() %>% 
+  separate(baker_name, into = c("baker", "baker_last_name"), sep = " ", extra = "merge") 
 
 bakes = 
   read_csv('data/bakes.csv', na = c("NA", " ", ".", "UNKNOWN", "Unknown", "N/A")) %>% 
@@ -175,12 +176,29 @@ bakes =
 results =
   read_csv('data/results.csv', skip = 2) %>% 
   janitor::clean_names()
-
-
-
-
 ```
 
+Check for completeness and correctness
+```{r}
+anti_join(bakes, bakers, by = c("series","baker"))
+anti_join(results, bakers, by = c("series","baker"))
+```
+
+merging datasets, arrange the final dataset
+```{r}
+merged_data <- bakers %>%
+  inner_join(bakes, by = c("baker", "series")) %>%
+  inner_join(results, by = c("baker", "series", "episode")) %>%
+  select(baker, baker_last_name, baker_age, baker_occupation, hometown,
+          series, episode, signature_bake, show_stopper, technical, result)
+write_csv(merged_data, "data/merged_data.csv")
+```
+
+I clean the data by first importing and viewing each individual dataset. I cleaned the column names into consistent format. For the bakers dataset, I separated baker_name into baker and baker_last_name, so that it is consistent with other datasets. For the bakes dataset, I specified a wide array of potential NA indicators after glancing through the dataset. For the result dataset, I skipped the first two rows when loading. 
+
+When merging the three data sets into a single one, I was not sure if i should keep bakers who did not appear in a certain data set. I was not sure whether to use full_join, inner_join or left_join, and how complete/comprehensive I want the final dataset to be. In the end, I decided to use inner_join and kept all rows in the bakers dataset, so that the final data set is as complete as possible, in case certain information is needed. 
+
+The final dataset contains all bakers that are in the bakers dataset, with their demographics, series and epidose, their bake, show stopper, technical and final results. I arranged the columns by fist the demographics (name, age, occupation, hometown), then the show contexts (series, episode), baking details (signature bakes, show stopper), then performance metrics (technical, result).
 
 ```{r}
 viewers = 
